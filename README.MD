@@ -169,3 +169,46 @@ ab -n 1000 -c 50 http:localhost:8080/test
 3. 将对象的引用保存到某个正确构造对象的final类型域中
 4. 将对象的引用保存到一个由锁保护的域中
 
+### 单例模式
+1. 饿汉式
+2. 懒汉式
+3. 双重检测 + volatile (禁止指令重排序)
+4. 枚举实现
+```java
+public class SingletonExample4 {
+
+    /**
+     * 私有构造函数
+     */
+    private SingletonExample4() {
+
+    }
+
+    public static SingletonExample4 getInstance() {
+        return Singleton.INSTANCE.getSingleton();
+    }
+
+
+    private enum Singleton {
+        INSTANCE;
+
+        @Getter
+        private SingletonExample4 singleton;
+
+        /** JVM保证只会执行一次 */
+        Singleton() {
+            this.singleton = new SingletonExample4();
+        }
+    }
+
+}
+
+```
+
+
+### 不可变对象
+- 对象创建其状态就不可改变
+- 对象所有域都是final类型
+- 对象是正确创建的，(在对象创建期间，this 引用没有逸出)
+
+
