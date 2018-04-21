@@ -211,4 +211,5 @@ public class SingletonExample4 {
 - 对象所有域都是final类型
 - 对象是正确创建的，(在对象创建期间，this 引用没有逸出)
 
+### 线程封闭
 
