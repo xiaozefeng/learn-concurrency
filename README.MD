@@ -79,12 +79,13 @@ CPU频率太快了，快到主存跟不上，这样在处理器时钟周期内�
 ## 并发模拟
 1. Postman : Http请求模拟工具
 2. Apache Bench (AB):  Apache附带的工具，测试网站性能  
-``` shell
+``` bash
 // -n 一共模拟多少个请求
 // -c 允许并发的请求数
 ab -n 1000 -c 50 http:localhost:8080/test  
 
 ```
+
 
 ![](http://7xv4mv.com1.z0.glb.clouddn.com/2018-04-20-093701.png)
 
@@ -103,12 +104,28 @@ ab -n 1000 -c 50 http:localhost:8080/test
 
 ### 可见性
 > 一个线程对主内存的修改能够及时的被其他线程观察到
+#### 导致共享变量在线程间不可见的原因:
+ - 线程交叉执行
+ - 重排序结合线程交叉执行
+ - 共享变量更新后的值没有及时在主内存和共内存中及时更新
+ 
+#### volatile 关键字是通过加入内存屏障和禁止重排序优化来实现
+- 对volatile变量写操作时，会在写操作后加入一条store屏障指令，将本地共享变量的值刷新到主内存中
+- 对volatile变量读操作时，会在读操作前加入一条load屏障指令，从主内存中读取共享变量
+![](http://7xv4mv.com1.z0.glb.clouddn.com/blog/2018-04-21-105718.png)
+![](http://7xv4mv.com1.z0.glb.clouddn.com/blog/2018-04-21-105813.png)
 
 ### 有序性
 > 一个线程观察其他线程中的指令执行顺序，由于指令重排序d额存在，该
 观察结果一般杂乱无序
+#### happens before 原则
+- 程序次序原则: 一个程序内，按照代码顺序，书写在前面的操作先行发生在后面的操作
+- 锁定规则: 一个unlock操作先行发生于后面对同一个锁的lock操作
+- volatile变量规则: 对一个变量的写操作先行发生于后面对这个变量的读操作
+- 传递规则: 如果操作A先行发生于操作B，而操作B又先行发生于操作C，则可以得出操作A先行
+发生于操作C
 
-### CAS (compare and swap)实现
+### CAS (compare and swap)原理
 ```
  // var1: 当前对象
  // var2:  当前的值
@@ -117,11 +134,10 @@ ab -n 1000 -c 50 http:localhost:8080/test
  // 逻辑: 当 var2 和 var5 相等值， 将底层的值更新为 var5 + var4 否则一直重试
  public final int getAndAddInt(Object var1, long var2, int var4) {
     int var5;
-        do {
-            var5 = this.getIntVolatile(var1, var2);
-        } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
-
-        return var5;
+    do {
+        var5 = this.getIntVolatile(var1, var2);
+    } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+    return var5;
  }    
 ```
 
@@ -138,4 +154,11 @@ ab -n 1000 -c 50 http:localhost:8080/test
 那么变量的版本号也会增加，那么就算重现ABA现象，那么版本号也是
 不一样的
 
+#### synchronized 和 Lock 和 Atomic 包对比
+> synchronized: 不可中断锁，在jvm层面实现，
+适合竞争不激烈的锁，可读性好
+
+> Lock: 可终端锁，多样化同步，竞争激烈时能维持常态
+
+> Atomic: 竞争激烈时能维持常态， 比Lock性能好，不过只能同步一个值
 
