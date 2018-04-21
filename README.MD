@@ -78,14 +78,17 @@ CPU频率太快了，快到主存跟不上，这样在处理器时钟周期内�
 
 ## 并发模拟
 1. Postman : Http请求模拟工具
-2. Apache Bench (AB):  Apache附带的工具，测试网站性能
-``` bash
-# -n 一共模拟多少个请求
-# -c 允许并发的请求数
-ab -n 1000 -c 50 http:localhost:8080/test
+2. Apache Bench (AB):  Apache附带的工具，测试网站性能  
+``` shell
+// -n 一共模拟多少个请求
+// -c 允许并发的请求数
+ab -n 1000 -c 50 http:localhost:8080/test  
 
 ```
+
 ![](http://7xv4mv.com1.z0.glb.clouddn.com/2018-04-20-093701.png)
+
+
 3. JMeter: Apache 组织开发的压测工具
 
 4. 代码模拟并发 `CountDownLatch` `Semaphore`
@@ -94,3 +97,45 @@ ab -n 1000 -c 50 http:localhost:8080/test
 > 当多个线程访问某个类时，不管运行时缓解采用何种调度方式或者这些进场将如何
 交替执行，并且在主调代码中不需要任何额外的同步或协同，这个类都能表现出正切的
 行为，那么就称这个类是线程安全的
+
+### 原子性
+> 提供了互斥访问，同一时刻只能有一个线程对它进行操作
+
+### 可见性
+> 一个线程对主内存的修改能够及时的被其他线程观察到
+
+### 有序性
+> 一个线程观察其他线程中的指令执行顺序，由于指令重排序d额存在，该
+观察结果一般杂乱无序
+
+### CAS (compare and swap)实现
+```
+ // var1: 当前对象
+ // var2:  当前的值
+ // var4: 需要加的值
+ // var5: 从底层取到的值
+ // 逻辑: 当 var2 和 var5 相等值， 将底层的值更新为 var5 + var4 否则一直重试
+ public final int getAndAddInt(Object var1, long var2, int var4) {
+    int var5;
+        do {
+            var5 = this.getIntVolatile(var1, var2);
+        } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+
+        return var5;
+ }    
+```
+
+#### AtomicLong 和 LongAdder 区别
+
+#### CAS 的ABA问题
+> 是指CAS操作的时候，其他线程将变量A的值改为了B又改回了A
+本线程用期望值A与当前变量进行比较的时候，发现A变量没有变,就对A
+值进行了swap操作,这个时候其实变量A已经被其他线程修改过了,这与设计思想
+是不符合的
+
+#### AtomicStampReference 解决了CAS的ABA问题
+> 每次对变量的修改，都会使版本号+1，所以只要当前变量被其他线程修改过
+那么变量的版本号也会增加，那么就算重现ABA现象，那么版本号也是
+不一样的
+
+
