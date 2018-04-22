@@ -1,10 +1,10 @@
-package org.dark.concurrency.unsafe;
+package org.dark.concurrency.example.unsafe;
 
 import lombok.extern.slf4j.Slf4j;
 import org.dark.concurrency.annotations.NotThreadSafe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,12 +18,12 @@ import java.util.concurrent.Semaphore;
  */
 @Slf4j
 @NotThreadSafe
-public class ArrayListExample {
+public class HashMapExample {
 
     private static int clientTotal = 5000;
     private static int threadTotal = 200;
 
-    private static List<Integer> list = new ArrayList<>();
+    private static Map<Integer, Integer> map = new HashMap<>();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -48,11 +48,11 @@ public class ArrayListExample {
         countDownLatch.await();
         executorService.shutdown();
 
-        log.info("list size :{}",list.size());
+        log.info("list size :{}", map.size());
     }
 
     private static void update(int temp) {
-        list.add(temp);
+        map.put(temp, temp);
     }
 
 }

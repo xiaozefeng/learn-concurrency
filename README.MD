@@ -219,3 +219,5 @@ public class SingletonExample4 {
 - ArrayList, HashSet, HashMap
 - if(condition(a)) { handle(a)}
 
+### 同步容器
+

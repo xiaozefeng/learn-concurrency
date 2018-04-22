@@ -1,42 +1,40 @@
-package org.dark.concurrency.unsafe;
+package org.dark.concurrency.example.unsafe;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dark.concurrency.annotations.NotThreadSafe;
+import org.dark.concurrency.annotations.ThreadSafe;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * Java 中用作日期转换
+ * String中线程不安全的类
  *
  * @author xiaozefeng
- * @date 2018/4/22 上午11:28
+ * @date 2018/4/22 上午11:21
  */
 @Slf4j
-@NotThreadSafe
-public class DateFormatExample1 {
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+@ThreadSafe
+public class StringExample2 {
 
-    private static int clientTotal = 5000;
-    private static int threadTotal = 200;
+    private final static int clientTotal = 5000;
+
+    private final static int threadTotal = 200;
+
+    private final static StringBuffer sb = new StringBuffer();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
         final Semaphore semaphore = new Semaphore(threadTotal);
-
         for (int i = 0; i < clientTotal; i++) {
             executorService.submit(() -> {
                 try {
                     semaphore.acquire();
-                    format();
+                    sb.append("a");
                     semaphore.release();
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
                     log.error(e.getMessage(), e);
                 } finally {
                     countDownLatch.countDown();
@@ -46,13 +44,6 @@ public class DateFormatExample1 {
 
         countDownLatch.await();
         executorService.shutdown();
-    }
-
-    private static void format() {
-        try {
-            Date parse = DATE_FORMAT.parse("20180422");
-        } catch (ParseException e) {
-            log.error("parse exception");
-        }
+        log.info("{}", sb.length());
     }
 }

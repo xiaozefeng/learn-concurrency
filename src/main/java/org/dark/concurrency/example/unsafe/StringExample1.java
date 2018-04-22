@@ -1,7 +1,7 @@
-package org.dark.concurrency.unsafe;
+package org.dark.concurrency.example.unsafe;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dark.concurrency.annotations.ThreadSafe;
+import org.dark.concurrency.annotations.NotThreadSafe;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -15,14 +15,14 @@ import java.util.concurrent.Semaphore;
  * @date 2018/4/22 上午11:21
  */
 @Slf4j
-@ThreadSafe
-public class StringExample2 {
+@NotThreadSafe
+public class StringExample1 {
 
     private final static int clientTotal = 5000;
 
     private final static int threadTotal = 200;
 
-    private final static StringBuffer sb = new StringBuffer();
+    private final static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();

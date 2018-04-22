@@ -1,29 +1,29 @@
-package org.dark.concurrency.unsafe;
+package org.dark.concurrency.example.unsafe;
 
 import lombok.extern.slf4j.Slf4j;
 import org.dark.concurrency.annotations.NotThreadSafe;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * 线程不安全的List
+ * Java 中用作日期转换
  *
  * @author xiaozefeng
  * @date 2018/4/22 上午11:28
  */
 @Slf4j
 @NotThreadSafe
-public class HashSetExample {
+public class DateFormatExample1 {
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
     private static int clientTotal = 5000;
     private static int threadTotal = 200;
-
-    private static Set<Integer> set = new HashSet<>();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -31,11 +31,10 @@ public class HashSetExample {
         final Semaphore semaphore = new Semaphore(threadTotal);
 
         for (int i = 0; i < clientTotal; i++) {
-            final int temp = i;
             executorService.submit(() -> {
                 try {
                     semaphore.acquire();
-                    update(temp);
+                    format();
                     semaphore.release();
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -47,12 +46,13 @@ public class HashSetExample {
 
         countDownLatch.await();
         executorService.shutdown();
-
-        log.info("list size :{}", set.size());
     }
 
-    private static void update(int temp) {
-        set.add(temp);
+    private static void format() {
+        try {
+            Date parse = DATE_FORMAT.parse("20180422");
+        } catch (ParseException e) {
+            log.error("parse exception");
+        }
     }
-
 }

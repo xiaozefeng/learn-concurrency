@@ -1,27 +1,29 @@
-package org.dark.concurrency.unsafe;
+package org.dark.concurrency.example.unsafe;
 
 import lombok.extern.slf4j.Slf4j;
-import org.dark.concurrency.annotations.ThreadSafe;
+import org.dark.concurrency.annotations.NotThreadSafe;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * Java 中用作日期转换
+ * 线程不安全的List
  *
  * @author xiaozefeng
  * @date 2018/4/22 上午11:28
  */
 @Slf4j
-@ThreadSafe
-public class DateFormatExample2 {
+@NotThreadSafe
+public class ArrayListExample {
+
     private static int clientTotal = 5000;
     private static int threadTotal = 200;
+
+    private static List<Integer> list = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -29,10 +31,11 @@ public class DateFormatExample2 {
         final Semaphore semaphore = new Semaphore(threadTotal);
 
         for (int i = 0; i < clientTotal; i++) {
+            final int temp = i;
             executorService.submit(() -> {
                 try {
                     semaphore.acquire();
-                    format();
+                    update(temp);
                     semaphore.release();
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -44,14 +47,12 @@ public class DateFormatExample2 {
 
         countDownLatch.await();
         executorService.shutdown();
+
+        log.info("list size :{}",list.size());
     }
 
-    private static void format() {
-        try {
-            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-            Date parse = DATE_FORMAT.parse("20180422");
-        } catch (ParseException e) {
-            log.error("parse exception");
-        }
+    private static void update(int temp) {
+        list.add(temp);
     }
+
 }
