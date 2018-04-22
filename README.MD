@@ -213,3 +213,9 @@ public class SingletonExample4 {
 
 ### 线程封闭
 
+### 线程不安全的写法
+- StringBuilder  -> StringBuffer
+- SimpleDateFormatter -> JodaTime
+- ArrayList, HashSet, HashMap
+- if(condition(a)) { handle(a)}
+
