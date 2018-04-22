@@ -221,3 +221,34 @@ public class SingletonExample4 {
 
 ### 同步容器
 
+
+
+### 并发容器 (J.U.C)
+![](http://7xv4mv.com1.z0.glb.clouddn.com/blog/2018-04-22-WechatIMG16.jpg)
+#### ArrayList -> CopyOnWriteArrayList
+> 写操作时复制，当有新的元素写入时先从原有的数组拷贝一份出来，在新的数组上作写操作
+写完之后，再讲原来的数组指向新数组。
+缺点1: 因为需要拷贝数组，所以在元素较多的情况下，可能发生GC
+缺点2: 不能用于实时读的场景，因为拷贝数组和新增元素都需要时间，当我们调用set操作后读取到的数据可能
+还是旧的；虽然CopyOnWriteArrayList能做到最终一致性，但是没法满足我们实时性的要求
+
+`CopyOnWriteArrayList 更适合读多写少的场景`
+
+#### HashSet、TreeSet -> CopyOnWriteArraySet、 ConcurrentSkipListSet
+> CopyOnWriteArraySet 原理和 CopyOnWriteArrayList 一样
+ConcurrentSkipListSet 的add、remove、都是原子性的，但是addAll、removeAll不是原子性操作的，
+需要自动手动加锁
+
+#### HashMap、TreeMap -> ConcurrentHashMap、ConcurrentSkipListMap
+
+
+### 安全共享对象
+> 线程限制: 一个被线程限制的对象，由线程独占，并且只能被占有它的线程修改
+> 共享只读: 一个共享只读对象，在没有额外同步的情况下，可以被多个线程并发访问，
+但是任何线程都不能修改它
+> 线程安全对象: 一个线程安全的对象或容器，在内部通过同步机制来保证线程安全，所以其他线程
+无需额外的同步就可以通过公共接口随意的访问它
+> 被守护对象: 被守护的对象只能通过获取特定的锁来访问它
+
+
+### 同步器 AQS
