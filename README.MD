@@ -284,3 +284,5 @@ ConcurrentSkipListSet 的add、remove、都是原子性的，但是addAll、remo
 ### 使用锁时一些建议
 1. 当竞争者不多的时候使用synchronized比较好
 2. 当竞争者不少，但是增长的趋势是能够预估的，这个时候ReentrantLock是一个很多的选择
+
+### FutureTask
