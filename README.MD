@@ -252,3 +252,35 @@ ConcurrentSkipListSet 的add、remove、都是原子性的，但是addAll、remo
 
 
 ### 同步器 AQS
+- 使用Node实现FIFO(First In First Out)队列，可用用于构建锁或者其他同步装置的基础框架
+- 利用了一个int类型表示状态
+- 使用方法是继承
+- 子类通过继承并通过实现它的方法来管理其状态，{acquire 和 release} 的方法操作状态
+- 可以同时实现排它锁和共享锁模式(独占、共享)
+
+#### AQS实现原理
+> 内部维护一个CLH队列来管理锁，线程会尝试获取锁，如果失败就讲当前线程以及等待等信息包成一个Node节点加入到syncQueue 中，
+接着不断循环获取锁，它的条件是当前节点为head的节点直接后进才会尝试，如果失败就会阻塞自己，直到自己被唤醒，而当持有锁的
+线程释放锁的时候，会唤醒队列中的后进线程
+
+### AQS同步组件
+#### CountDownLatch
+![](http://7xv4mv.com1.z0.glb.clouddn.com/2018-04-23-041929.png)  
+- 使用场景：
+    1. 某些程序的执行需要等待某个条件完成后才能继续执行后续的操作
+
+#### Semaphore
+> 控制同一时间内允许线程的个数
+#### CyclicBarrier
+#### ReentrantLock
+- 可指定是公平锁还是非公平锁
+- 提供了一个Condition类，可以分组唤醒需要唤醒的线程
+- 提供能够中断等待锁的线程的机制，lock.lockInterruptibly()
+
+#### Condition
+#### FutureTask
+
+
+### 使用锁时一些建议
+1. 当竞争者不多的时候使用synchronized比较好
+2. 当竞争者不少，但是增长的趋势是能够预估的，这个时候ReentrantLock是一个很多的选择
