@@ -286,3 +286,39 @@ ConcurrentSkipListSet 的add、remove、都是原子性的，但是addAll、remo
 2. 当竞争者不少，但是增长的趋势是能够预估的，这个时候ReentrantLock是一个很多的选择
 
 ### FutureTask
+### BlockingQueue
+![](http://7xv4mv.com1.z0.glb.clouddn.com/2018-04-23-105440.png)
+#### ArrayBlockingQueue
+#### DelayQueue
+#### LinkedBlockingQueue
+#### PriorityBlockingQueue
+#### SynchronousQueue
+
+### 线程池
+- 重用存在的线程，减少对象的创建，消亡的消亡，性能佳
+- 可有效控制最大并发线程数，提高系统资源利用率，同时可以避免过多的资源竞争，避免阻塞
+- 提供定时执行、定期执行、单线程、并发数控制等功能
+#### 构造方法
+```java
+public ThreadPoolExecutor(int corePoolSize,
+                          int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue<Runnable> workQueue,
+                          ThreadFactory threadFactory,
+                          RejectedExecutionHandler handler){}
+```
+##### 规则
+> 当前线程数不大于corePoolSize时，不管其他线程是否空闲，都会创建新的线程处理任务
+> 当 corePoolSize < 线程数 < maximumPoolSize, 如果workQueue 没满，那么放入workQueue ，否则创建新的线程
+> 当corePoolSize 的设置和 maximumPoolSize 是一样的时候，看workQueue是否满了，如果没满则放入队列，等下空闲线程来处理,当workQueue满的时候，使用handler 来处理
+> 当workQueue是无界队列时，那么maximumPoolSize无效，线程池中的最大线程数为corePoolSize, 当所有corePoolSize都在做任务的时候，请求的任务都会放入workQueue
+> 当workQueue是有界队列时，可以将最大线程数限制为maximumPoolSize， 可以降低资源的消耗，但是没那么大的吞吐量
+> keepAliveTime: 当线程数量超过了corePoolSize的时候，这个时候又没有任务提交，那么在一定时间后，会销毁corePoolSize数量以外的线程数
+
+##### 如何合理设置
+> 降低系统资源的消耗: 较大的队列容量，和较小的线程数量，这样会降低线程处理任务的吞吐量
+> 如果我们的方法经常发生阻塞，那么可以重新设置线程池的容量
+> CPU密集型任务，就需要尽量压榨CPU，参考值可以设置为NCPU+1
+> IO密集型人物，参考值可以设置为2 * NCPU
+
