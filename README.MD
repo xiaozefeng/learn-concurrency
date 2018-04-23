@@ -333,3 +333,15 @@ public ThreadPoolExecutor(int corePoolSize,
 - 不剥夺条件
 - 环路等待条件
 
+### 多线程开发最佳实践
+- 使用本地变量
+- 使用不可变类
+- 最下化锁的作用域范围: `S = 1/(1-a+a/n)`
+- 使用线程池的Executor，而不是直接new Thread执行
+- 宁可使用同步，也不要使用线程的wait和notify方法
+- 使用BlockingQueue实现生产-消费模式
+- 使用并发集合而不是加了锁的同步集合
+- 使用Semaphore创建有界的访问
+- 宁可使用同步代码块，也不使用同步方法
+- 避免使用static变量，如果需要使用的话也使用final修饰
+
