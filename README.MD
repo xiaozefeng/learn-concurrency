@@ -293,6 +293,11 @@ ConcurrentSkipListSet 的add、remove、都是原子性的，但是addAll、remo
 #### LinkedBlockingQueue
 #### PriorityBlockingQueue
 #### SynchronousQueue
+#### HashMap 
+> HashMap resize()在多线程情况下可能造成死循环
+#### ConcurrentHashMap
+> JDK1.7 中使用分段锁技术: 最外层是一个segment数组
+![](http://7xv4mv.com1.z0.glb.clouddn.com/2018-04-24-021952.png)
 
 ### 线程池
 - 重用存在的线程，减少对象的创建，消亡的消亡，性能佳
